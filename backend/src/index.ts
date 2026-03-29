@@ -14,6 +14,10 @@ import {
   stopDefaultCheckerScheduler,
 } from "./services/defaultChecker.js";
 import { eventStreamService } from "./services/eventStreamService.js";
+import {
+  startNotificationCleanupScheduler,
+  stopNotificationCleanupScheduler,
+} from "./services/notificationService.js";
 
 const port = process.env.PORT || 3001;
 
@@ -25,6 +29,9 @@ const server = app.listen(port, () => {
 
   // Start periodic on-chain default checks (if configured)
   startDefaultCheckerScheduler();
+  
+  // Start periodic notification cleanup
+  startNotificationCleanupScheduler();
 });
 
 const shutdown = async (signal: "SIGTERM" | "SIGINT") => {
@@ -39,6 +46,7 @@ const shutdown = async (signal: "SIGTERM" | "SIGINT") => {
 
   stopIndexer();
   stopDefaultCheckerScheduler();
+  stopNotificationCleanupScheduler();
   
   if (typeof eventStreamService.closeAll === 'function') {
     eventStreamService.closeAll("Server shutting down");

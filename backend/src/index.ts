@@ -1,6 +1,9 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+import { validateEnvVars } from "./config/env.js";
+validateEnvVars();
+
 // Sentry must be initialized before any other imports so it can instrument them
 import { initSentry } from "./config/sentry.js";
 initSentry();

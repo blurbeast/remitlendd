@@ -75,6 +75,7 @@ const corsOptions: cors.CorsOptions = {
     "Authorization",
     "x-api-key",
     "x-request-id",
+    "Idempotency-Key",
   ],
   credentials: true,
 };

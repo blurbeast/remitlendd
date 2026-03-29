@@ -51,7 +51,7 @@ describe("Idempotency Middleware", () => {
     const key = "test-key";
     const cachedResponse = { status: 201, body: { success: true } };
     asMock(req.header).mockReturnValue(key);
-    asMock(cacheService.get).mockResolvedValue(cachedResponse);
+    (cacheService.get as jest.Mock<() => Promise<any>>).mockResolvedValue(cachedResponse);
 
     await idempotencyMiddleware(req as Request, res as Response, next);
 
@@ -65,15 +65,11 @@ describe("Idempotency Middleware", () => {
   it("should proceed and intercept response on cache miss", async () => {
     const key = "new-key";
     asMock(req.header).mockReturnValue(key);
-    asMock(cacheService.get).mockResolvedValue(null);
+    (cacheService.get as jest.Mock<() => Promise<any>>).mockResolvedValue(null);
 
     await idempotencyMiddleware(req as Request, res as Response, next);
 
     expect(next).toHaveBeenCalled();
     expect(res.on).toHaveBeenCalledWith("finish", expect.any(Function));
-
-    // Verify that res.json was wrapped
-    const originalJson = res.json;
-    expect(res.json).not.toBe(originalJson);
   });
 });

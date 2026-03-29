@@ -1,9 +1,10 @@
-import { notificationService } from "../services/notificationService.js";
-import { query } from "../db/connection.js";
 import { jest } from "@jest/globals";
 
-// Helper to cast to jest.Mock
-const asMock = (fn: any) => fn as jest.Mock;
+jest.mock("../db/connection.js");
+import { query } from "../db/connection.js";
+import { notificationService } from "../services/notificationService.js";
+
+const mockedQuery = query as jest.MockedFunction<typeof query>;
 
 describe("Notification Cleanup Strategy", () => {
   beforeEach(() => {
@@ -14,7 +15,7 @@ describe("Notification Cleanup Strategy", () => {
     const retentionDays = 90;
     
     // Mock the query result to simulate successful deletion of 2 rows
-    (query as jest.Mock).mockResolvedValue({ rowCount: 2 });
+    mockedQuery.mockResolvedValue({ rowCount: 2 } as any);
 
     const deletedCount = await notificationService.deleteOldNotifications(retentionDays);
 
@@ -26,7 +27,7 @@ describe("Notification Cleanup Strategy", () => {
   });
 
   it("should return 0 if no notifications are deleted", async () => {
-    (query as jest.Mock).mockResolvedValue({ rowCount: 0 });
+    mockedQuery.mockResolvedValue({ rowCount: 0 } as any);
 
     const deletedCount = await notificationService.deleteOldNotifications(90);
 
@@ -34,7 +35,7 @@ describe("Notification Cleanup Strategy", () => {
   });
 
   it("should handle database errors gracefully", async () => {
-    (query as jest.Mock).mockRejectedValue(new Error("Database error"));
+    mockedQuery.mockRejectedValue(new Error("Database error") as never);
 
     const deletedCount = await notificationService.deleteOldNotifications(90);
 

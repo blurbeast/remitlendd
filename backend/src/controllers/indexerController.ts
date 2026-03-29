@@ -141,7 +141,7 @@ export const getIndexerStatus = async (req: Request, res: Response) => {
  */
 export const getBorrowerEvents = async (req: Request, res: Response) => {
   try {
-    const { borrower } = req.params;
+    const borrower = String(req.params.borrower ?? "");
     const { limit, offset, sort } = parseQueryParams(req);
     const cacheKey = buildEventsCacheKey("borrower", borrower, req);
     const cachedData = await cacheService.get(cacheKey);
@@ -203,9 +203,9 @@ export const getBorrowerEvents = async (req: Request, res: Response) => {
  */
 export const getLoanEvents = async (req: Request, res: Response) => {
   try {
-    const { loanId } = req.params;
+    const loanId = String(req.params.loanId ?? "");
     const { limit, offset, sort } = parseQueryParams(req);
-
+    
     if (!loanId) {
       return res.status(400).json({
         success: false,

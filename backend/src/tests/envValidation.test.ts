@@ -1,12 +1,17 @@
 import { validateEnvVars } from "../config/env.js";
 import { jest } from "@jest/globals";
-import logger from "../utils/logger.js";
+
+jest.mock("../utils/logger.js");
 
 describe("Environment Variable Validation", () => {
   const originalEnv = process.env;
-  const mockExit = jest.spyOn(process, "exit").mockImplementation((code?: string | number | null | undefined) => {
-    throw new Error(`Process.exit called with ${code}`);
-  }) as unknown as jest.SpyInstance<(code?: string | number | null | undefined) => never>;
+  let mockExit: any;
+
+  beforeAll(() => {
+    mockExit = jest.spyOn(process, "exit").mockImplementation((code?: string | number | null | undefined) => {
+      throw new Error(`Process.exit called with ${code}`);
+    });
+  });
 
   beforeEach(() => {
     jest.resetModules();

@@ -51,8 +51,8 @@ const shutdown = async (signal: "SIGTERM" | "SIGINT") => {
   stopDefaultCheckerScheduler();
   stopNotificationCleanupScheduler();
   
-  if (typeof eventStreamService.closeAll === 'function') {
-    eventStreamService.closeAll("Server shutting down");
+  if (typeof (eventStreamService as any).closeAll === 'function') {
+    (eventStreamService as any).closeAll("Server shutting down");
   } else if (typeof eventStreamService.closeAllConnections === 'function') {
     eventStreamService.closeAllConnections("Server shutting down");
   }
